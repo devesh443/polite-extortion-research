@@ -1,8 +1,8 @@
 # Polite Extortion: Ransomware Notes as a Form of Business Writing
 
-Supplementary materials for the research paper **"Polite Extortion: Ransomware Notes as a Form of Business Writing"** (English Experiential Learning Project). The paper itself is not included here. It refers to this repository in Appendix C.
+Supplementary materials for the research paper **"Polite Extortion: Ransomware Notes as a Form of Business Writing"** (English Experiential Learning Project). The paper itself is not included here. Appendix C of the paper describes these supplementary files.
 
-This repository contains the coding sheet and the Python scripts. With them, anyone can rebuild the 45-note sample from the public archive and reproduce every count, statistic and figure reported in the paper.
+This repository contains the coding sheet and the Python scripts. With them, anyone can rebuild the 45-note sample from the public archive and reproduce the sampling counts, coded-item counts, word counts, section-order positions and Figs. 1–8 reported in the paper. A few details in the paper's text come from reading the notes rather than from the scripts: for example, the deadline lengths, the number of letter-style closings, and how a word is used in context (the script finds *team* in 11 notes; the paper's figure of nine counts only the notes where it refers to the writers). Figures quoted from other studies are not reproduced here.
 
 ## Contents
 
@@ -41,7 +41,7 @@ Only the written text was analysed. No malware was downloaded or run, and no lin
 
 ## Data source
 
-| | |
+| Item | Detail |
 |---|---|
 | Archive | Zscaler ThreatLabz, *Ransomware notes* — <https://github.com/ThreatLabz/ransomware_notes> |
 | Commit | [`8765d0b53dc09571b217a3fa3365730c46be9dee`](https://github.com/ThreatLabz/ransomware_notes/tree/8765d0b53dc09571b217a3fa3365730c46be9dee) (13 August 2026) |
@@ -73,7 +73,7 @@ The sampled notes range from 102 to 627 words (median 225). The full list is in 
 
 ## Repository structure
 
-```
+```text
 polite-extortion-research/
 ├── README.md                        This file
 ├── requirements.txt                 Python dependency (matplotlib, for the figures only)
@@ -94,7 +94,7 @@ polite-extortion-research/
 | `sample_notes.py` | archive path | Prints the sampling counts and the 45 notes; writes `sample_stats.json`. |
 | `word_counts.py` | archive path | Prints occurrences and number of notes for each word group; writes `word_counts.json`. |
 | `section_order.py` | archive path | Prints the number of notes with a cue phrase and the mean and median position for each section; writes `pos.json`. |
-| `analyse_coding.py` | coding sheet | Prints item counts, sections per note, index distribution, threat cross-tabulations and word-count summaries. It also checks that every index value matches its definition. |
+| `analyse_coding.py` | coding sheet | Prints item counts, sections per note, index summaries (scores of 3 or more, 5 and 0), threat cross-tabulations, median length and legal consequences by index group, and word-count summaries. It also checks that every index value matches its definition. |
 | `make_figures.py` | coding sheet and the three JSON files | Writes `fig/fig1_sampling.png` … `fig/fig8_sales_letter.png`. |
 
 The generated files (`*.json`, `fig/`) are not committed. They are rebuilt by the scripts.
@@ -111,12 +111,12 @@ The full codebook definitions and the cue phrases are in Appendix B (Tables III�
 
 ## Requirements and installation
 
-- **Python 3.6 or later.** Verified with Python 3.14.10.
+- **Python 3.7 or later.** `make_figures.py` needs matplotlib 3.5 or later, which needs Python 3.7 or later; recent matplotlib releases need a newer Python (matplotlib 3.11.2 needs Python 3.11 or later). Verified with Python 3.14.10 and matplotlib 3.11.2.
 - **matplotlib** is needed for `make_figures.py` only. The other five scripts use the standard library. Verified with matplotlib 3.11.2.
 - **Git**, to clone the source archive.
 - **Liberation Serif font** (optional, for an exact visual match). `make_figures.py` sets this font. Without it, matplotlib falls back to its default font and prints many `findfont` warnings. The numbers in the figures stay the same, but the wider fallback font makes some labels overflow their boxes in Figs. 1 and 8.
   - Debian/Ubuntu: `sudo apt install fonts-liberation`
-  - Other systems: install it from the [Liberation Fonts releases](https://github.com/liberationfonts/liberation-fonts/releases)
+  - Other systems: download the TTF archive from the [Liberation Fonts releases](https://github.com/liberationfonts/liberation-fonts/releases) and install the `LiberationSerif-*.ttf` files (on Windows: right-click > Install). If matplotlib still cannot find the font, delete its font cache and run the script again.
 
 Set up the project:
 
@@ -127,8 +127,12 @@ cd polite-extortion-research
 python -m venv .venv
 # macOS / Linux:
 source .venv/bin/activate
-# Windows (PowerShell):
+# Windows (PowerShell). If activation fails with "running scripts is disabled
+# on this system", first run (affects only the current PowerShell window):
+#   Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
 # .venv\Scripts\Activate.ps1
+# Windows (Git Bash):
+# source .venv/Scripts/activate
 
 pip install -r requirements.txt
 ```
@@ -160,15 +164,15 @@ python make_figures.py                     # Figs. 1-8                          
 
 The first line printed by `sample_notes.py` should be:
 
-```
+```text
 folders=222 no_txt=21 short=22 eligible=179 sample=45 words=11647
 ```
 
-Its sample list should match the first four columns of `ransom_notes_coding_sheet.csv` exactly.
+It then prints the sample list: 45 tab-separated lines (number, group folder, file name, word count), which should match the first four columns of the 45 numbered rows of `ransom_notes_coding_sheet.csv` exactly. If the first line differs, the archive is not at the pinned commit or files are missing from it (see *Antivirus software* below), and the results will not match the paper.
 
 `analyse_coding.py` should report, among other lines:
 
-```
+```text
 Sections per note: mean 6.4, min 2, max 10
 Index: >=3 in 19 notes, 5 in ['ailock', 'novagroup'], 0 in 7
 Any of the three business features: 37; all three: 6
@@ -181,8 +185,8 @@ Words: total 11647, min 102, max 627, median 225
 ### Reproducibility notes
 
 - **Determinism.** The sample and all outputs are fully determined by the archive commit. Repeated runs produce byte-identical files.
-- **Line endings (Fig. 3 only).** `section_order.py` measures positions as character offsets. Git for Windows normally checks text files out with CRLF line endings, while macOS and Linux use LF. This shifts individual positions in `pos.json` slightly (by at most about 0.004) and can change the medians printed by the script. The mean positions in Table V are the same either way. The paper's figures were reproduced on a Windows (CRLF) checkout.
-- **Antivirus software.** The archive holds the text of real ransom notes. Some antivirus products, including Microsoft Defender, may flag or quarantine a few of these text and HTML files when the archive is cloned; this was observed for files in the `lockbit`, `ftcode` and `blackhunt` folders. None of these files is in the sample, and the scripts only read the files as text. Removal of those files does not change the sample or any result. Do not open or run anything in the archive.
+- **Line endings (Fig. 3 only).** `section_order.py` measures positions as character offsets. Git for Windows (with its default `core.autocrlf=true`) checks out notes stored with LF endings as CRLF, while macOS and Linux keep them as LF. This applies to 27 of the 45 sampled notes; the other 18 have the same bytes on every system. It shifts individual positions in `pos.json` slightly (by at most about 0.004) and can change some medians printed by the script in the second decimal place. The counts and mean positions in Table V are the same either way. The paper's figures were reproduced on a Windows (CRLF) checkout.
+- **Antivirus software.** The archive holds the text of real ransom notes. Some antivirus products, including Microsoft Defender, may flag and quarantine some of these text and HTML files when the archive is cloned, copied or read. On Windows this was observed for files in the `lockbit`, `ftcode`, `blackhunt`, `trigona`, `helldown` and `akira` folders. The scripts only read the files as text and never run them. Losing a file that is not the first `.txt` in its folder makes no difference. Losing a folder's first `.txt` note, however, changes the sample, because every fourth eligible note is taken. For example, if `helldown/Readme.[id].txt` is removed, `sample_notes.py` prints `no_txt=22 ... eligible=178 ... words=11193` and 26 of the 45 notes change. Always compare the first line printed by `sample_notes.py` with the expected line above, and check `git -C ransomware_notes status` for deleted files. If files are missing, restore them (`git -C ransomware_notes checkout -- .`) after allowing them in your antivirus software, or run the pipeline on a system where they are not removed. Do not open or run anything in the archive.
 - **Encoding.** `notes.py` detects UTF-16 only when the file starts with a byte-order mark. Two first-in-folder notes that are not in the sample (`kawalocker` and `safepay`) are UTF-16 without a byte-order mark, so their word counts are inflated. Both still have well over 100 words, so this does not affect the sample.
 
 ## Key findings
@@ -198,7 +202,7 @@ All figures below come from the coding sheet and the scripts in this repository.
 **Business and service language (objective 2)**
 - 37 notes (82%) use commercial vocabulary, service vocabulary or a stated business motive; 6 (13%) have all three. Commercial vocabulary appears in 31 notes (69%), service vocabulary in 18 (40%).
 - Only 4 notes state a price. The rest ask the reader to make contact first.
-- On the five-point business-writing index, 19 notes (42%) score three or more, two (AiLock and Nova Group) score five, and 7 (16%) score zero.
+- On the business-writing index (0–5), 19 notes (42%) score three or more, two (AiLock and Nova Group) score five, and 7 (16%) score zero.
 - *Ransom* appears in only 5 of the 45 notes, while some form of *pay* appears in 23. *Stole/stolen* appears in 9 notes, against 19 for the more neutral *downloaded*, *exfiltrated* or *copied*.
 
 **Politeness, reassurance and threat (objective 3)**
@@ -218,6 +222,7 @@ All figures below come from the coding sheet and the scripts in this repository.
 - **Correction.** One coding decision (Blacklock, commercial vocabulary) was later corrected because it did not match the codebook's word list.
 - **Writing and figures.** The AI assistant was also used for help in drafting and revising the paper's text and in preparing the figures.
 - **This repository.** The repository was prepared with the help of an AI coding assistant (Claude Code). It checked that the scripts run, re-ran the full pipeline against the pinned commit, compared the outputs with the paper and wrote this README. The research data and scripts were not changed.
+- **Word counts.** `word_counts.py` was rewritten when these supplementary files were prepared, and the paper's word counts were updated to match its output.
 - **No human validation.** The coding has **not** been checked independently by a second human coder. No inter-coder reliability figure exists.
 
 ## Limitations
@@ -228,7 +233,7 @@ All figures below come from the coding sheet and the scripts in this repository.
 - **Inclusion rules.** Only English `.txt` notes of 100 words or more were included; shorter notes may be plainer. One note was taken per group, although some groups have several versions.
 - **Section order is an estimate.** It is based on cue phrases, which are narrower than the coding definitions.
 - **Text only.** The study cannot say how real readers react to the notes or whether the attackers keep their promises.
-- **Small sample.** With 45 notes, the counts and cross-tabulations are descriptive; no statistical significance tests are reported.
+- **Small sample** (a note for this repository, not one of the limitations listed in the paper). With 45 notes, the counts and cross-tabulations are descriptive; the paper reports no statistical significance tests.
 
 ## Safety and privacy
 
