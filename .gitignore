@@ -1,0 +1,32 @@
+# Source archive (clone it yourself at the pinned commit; it is not redistributed here)
+ransomware_notes/
+
+# Pipeline outputs (regenerate them with the scripts)
+sample_stats.json
+word_counts.json
+pos.json
+fig/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Paper and presentation files are not part of this repository
+*.pdf
+*.doc
+*.docx
+*.ppt
+*.pptx
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+*:Zone.Identifier
+.vscode/
+.idea/
+*~
+*.tmp
