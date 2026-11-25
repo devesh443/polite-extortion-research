@@ -18,6 +18,7 @@ This repository contains the coding sheet and the Python scripts. With them, any
 - [Limitations](#limitations)
 - [Safety and privacy](#safety-and-privacy)
 - [Attribution and licence of the source data](#attribution-and-licence-of-the-source-data)
+- [Licence of this repository](#licence-of-this-repository)
 
 ## Project overview
 
@@ -76,6 +77,7 @@ The sampled notes range from 102 to 627 words (median 225). The full list is in 
 ```text
 polite-extortion-research/
 ├── README.md                        This file
+├── LICENSE                          MIT (scripts) and CC BY 4.0 (coding sheet)
 ├── requirements.txt                 Python dependency (matplotlib, for the figures only)
 ├── .gitignore                       Excludes the cloned archive, generated outputs and local files
 ├── ransom_notes_coding_sheet.csv    Coding of all 45 notes on the 22 codebook items
@@ -250,3 +252,7 @@ This repository does not redistribute any files from the archive. Users who clon
 If you use these materials, please cite the paper and the ThreatLabz archive:
 
 > Zscaler ThreatLabz, "Ransomware notes," GitHub repository, 2026. [Online]. Available: https://github.com/ThreatLabz/ransomware_notes
+
+## Licence of this repository
+
+The Python scripts are released under the MIT License and the coding sheet (`ransom_notes_coding_sheet.csv`) under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). See [`LICENSE`](LICENSE). These licences do not cover the ThreatLabz archive, which keeps its own MIT License.
